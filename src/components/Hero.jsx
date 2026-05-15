@@ -1,5 +1,8 @@
-import { useRef } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import SafeBoundary from "./SafeBoundary.jsx";
+
+const Spline = lazy(() => import("@splinetool/react-spline"));
 
 export default function Hero() {
   const ref = useRef(null);
@@ -103,20 +106,28 @@ export default function Hero() {
 }
 
 function SplineViewer() {
+  const [loaded, setLoaded] = useState(false);
   return (
     <div className="relative h-full w-full">
-      {/* Soft placeholder shown until Spline finishes loading */}
-      <div className="pointer-events-none absolute inset-0 grid place-items-center">
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute inset-0 grid place-items-center transition-opacity duration-700 ${
+          loaded ? "opacity-0" : "opacity-100"
+        }`}
+      >
         <div className="relative h-56 w-56 rounded-full bg-gradient-to-br from-violet-400/30 via-violet-700/20 to-transparent blur-2xl" />
-        <div className="absolute h-40 w-40 rounded-full border border-violet-300/30" />
+        <div className="absolute h-40 w-40 animate-pulseGlow rounded-full border border-violet-300/30" />
         <div className="absolute h-56 w-56 rounded-full border border-violet-400/15" />
       </div>
-      <spline-viewer
-        url="https://prod.spline.design/FMcrcJ3RFG369YBa/scene.splinecode"
-        loading-anim="true"
-        events-target="global"
-        style={{ width: "100%", height: "100%", position: "relative" }}
-      ></spline-viewer>
+      <SafeBoundary fallback={null}>
+        <Suspense fallback={null}>
+          <Spline
+            scene="https://prod.spline.design/FMcrcJ3RFG369YBa/scene.splinecode"
+            onLoad={() => setLoaded(true)}
+            style={{ width: "100%", height: "100%", background: "transparent" }}
+          />
+        </Suspense>
+      </SafeBoundary>
     </div>
   );
 }

@@ -107,10 +107,3 @@ body {
   }
 }
 
-/* Spline viewer should fill its container responsively */
-spline-viewer {
-  width: 100%;
-  height: 100%;
-  display: block;
-  background: transparent !important;
-}
