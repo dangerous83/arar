@@ -11,16 +11,29 @@ npm run build        # outputs to dist/
 npm run preview      # serves the production build locally
 ```
 
-## Deploying to Vercel
+## Deploying
 
-The repo includes [`vercel.json`](./vercel.json) configured for Vite. To deploy a preview:
+### GitHub Pages (recommended — already wired up)
 
-1. Sign in to [vercel.com](https://vercel.com) and click **Add New → Project**.
-2. Import `dangerous83/arar`.
-3. Vercel auto-detects Vite. The framework, build command (`npm run build`), and output directory (`dist`) are already in `vercel.json` — accept the defaults.
-4. Every push to `claude/install-ui-ux-repo-7Ol3y` gets its own **preview URL**; merges to `main` deploy to production.
+The workflow at [`.github/workflows/deploy-pages.yml`](./.github/workflows/deploy-pages.yml) builds the Vite app and publishes it to GitHub Pages on every push to `main`.
 
-The 3D Spline scene will load correctly there (unlike in this remote sandbox, where the Spline CDN is unreachable).
+**One-time setup** (in the repo on GitHub):
+
+1. Go to **Settings → Pages**.
+2. Under **Build and deployment → Source**, choose **GitHub Actions**.
+
+After that, every merge to `main` will:
+
+- Build the Vite app with `VITE_BASE=/arar/` so asset URLs resolve under the Pages subpath.
+- Copy `index.html` to `404.html` so SPA routes work on refresh.
+- Drop a `.nojekyll` file so Pages serves the `dist/` folder verbatim.
+- Publish to **https://dangerous83.github.io/arar/**.
+
+You can also trigger a deploy manually from the **Actions** tab → **Deploy to GitHub Pages** → **Run workflow**.
+
+### Vercel (alternative)
+
+The repo also includes [`vercel.json`](./vercel.json) configured for Vite. Import `dangerous83/arar` at [vercel.com/new](https://vercel.com/new) — Vercel reads `vercel.json` and deploys with the right settings out of the box.
 
 ## Scroll-driven 3D Spline interactivity
 
