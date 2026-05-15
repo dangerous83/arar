@@ -82,7 +82,7 @@ export default function TrustedLogos() {
             <motion.div
               key={i}
               whileHover={{ scale: 1.06, opacity: 1 }}
-              className="text-white/35 transition hover:text-violet-200"
+              className="text-white/55 transition hover:text-violet-200"
             >
               <Logo />
             </motion.div>

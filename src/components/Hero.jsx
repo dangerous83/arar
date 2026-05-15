@@ -1,11 +1,15 @@
-import { useRef } from "react";
+import { lazy, Suspense, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import SafeBoundary from "./SafeBoundary.jsx";
+
+const Spline = lazy(() => import("@splinetool/react-spline"));
 
 export default function Hero() {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
+    layoutEffect: false,
   });
 
   const y = useTransform(scrollYProgress, [0, 1], [0, -120]);
@@ -17,7 +21,7 @@ export default function Hero() {
     <section
       id="home"
       ref={ref}
-      className="relative isolate flex min-h-[100svh] flex-col items-center justify-start overflow-hidden pt-32 sm:pt-36"
+      className="relative isolate flex min-h-[100svh] flex-col items-center justify-start overflow-hidden pt-40 sm:pt-36"
     >
       {/* Grid + glows */}
       <div className="pointer-events-none absolute inset-0 -z-10">
@@ -102,13 +106,29 @@ export default function Hero() {
 }
 
 function SplineViewer() {
+  const [loaded, setLoaded] = useState(false);
   return (
-    <spline-viewer
-      url="https://prod.spline.design/FMcrcJ3RFG369YBa/scene.splinecode"
-      loading-anim="true"
-      events-target="global"
-      style={{ width: "100%", height: "100%" }}
-    ></spline-viewer>
+    <div className="relative h-full w-full">
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute inset-0 grid place-items-center transition-opacity duration-700 ${
+          loaded ? "opacity-0" : "opacity-100"
+        }`}
+      >
+        <div className="relative h-56 w-56 rounded-full bg-gradient-to-br from-violet-400/30 via-violet-700/20 to-transparent blur-2xl" />
+        <div className="absolute h-40 w-40 animate-pulseGlow rounded-full border border-violet-300/30" />
+        <div className="absolute h-56 w-56 rounded-full border border-violet-400/15" />
+      </div>
+      <SafeBoundary fallback={null}>
+        <Suspense fallback={null}>
+          <Spline
+            scene="https://prod.spline.design/FMcrcJ3RFG369YBa/scene.splinecode"
+            onLoad={() => setLoaded(true)}
+            style={{ width: "100%", height: "100%", background: "transparent" }}
+          />
+        </Suspense>
+      </SafeBoundary>
+    </div>
   );
 }
 
